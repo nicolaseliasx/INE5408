@@ -1,3 +1,6 @@
+// Copyright [2021] Nicolas Elias
+#ifndef STRUCTURES_BINARY_THREE_H
+#define STRUCTURES_BINARY_THREE_H
 #include "array_list.h"
 
 namespace structures {
@@ -14,7 +17,7 @@ public:
 
     void insert(const T& data) {
         if (empty()) {
-            root = new Node(data)
+            root = new Node(data);
         } else {
             root->insert(data);
         }
@@ -30,7 +33,7 @@ public:
         }
     }
 
-    //Nao entendi essa parte
+    //  Nao entendi essa parte
     bool contains(const T& data) const {
         bool temp = false;
         if (!empty())
@@ -81,32 +84,103 @@ private:
         Node* right;
 
         void insert(const T& data_) {
-            
+            Node* new_node;
+            if (data_ < this->data) {
+                if (this->left == nullptr) {
+                    new_node = new Node(data_);
+                    new_node->left = nullptr;
+                    new_node->right = nullptr;
+                    this->left = new_node;
+                } else {
+                    left->insert(data_);
+                }
+            } else {
+                if (this->right == nullptr) {
+                    new_node = new Node(data_);
+                    new_node->left = nullptr;
+                    new_node->right = nullptr;
+                    this->right = new_node;
+                } else {
+                    right->insert(data_);
+                }
+            }
         }
 
-        bool remove(const T& data_){
-
+        bool remove(const T& data_) {
+            bool temp = false;
+            if (data_ == this->data) {
+                Node* new_node;
+                if ((this->left != nullptr) && (this->right != nullptr)) {
+                    new_node = this->right;
+                    while (new_node->left != nullptr)
+                        new_node = new_node->left;
+                    this->data = new_node->data;
+                    temp = right->remove(this->data);
+                } else {
+                    if (this->right != nullptr) {
+                        this->data = right->data;
+                        temp = right -> remove(this->data);
+                    } else {
+                        if (this->left != nullptr) {
+                        this->data = left->data;
+                        temp = left->remove(this->data);
+                        } else {
+                            delete this;
+                            temp = true;
+                        }
+                    }
+                }
+            } else {
+            if ((this->left != nullptr) && (data_ < this->data))
+                temp = left->remove(data_);
+            if ((this->right != nullptr) && (data_ > this->data))
+                temp = right->remove(data_);
+            }
+            return temp;
         }
 
         bool contains(const T& data_) const {
-
+            if (data_ == this->data) {
+                return true;
+            } else {
+                if ((this->left != nullptr) && (data_ < this->data)) {
+                    return left->contains(data_);
+                } else if ((this->right != nullptr) && (data_ > this->data)) {
+                    return right->contains(data_);
+                }
+            }
+            return false;
         }
 
         void pre_order(ArrayList<T>& v) const {
-
+            v.push_back(this->data);
+            if (this->left != nullptr)
+                left->pre_order(v);
+            if (this->right != nullptr)
+                right->pre_order(v);
         }
 
         void in_order(ArrayList<T>& v) const {
-
+            if (this->left != nullptr)
+                left->in_order(v);
+            v.push_back(this->data);
+            if (this->right != nullptr)
+                right->in_order(v);
         }
 
         void post_order(ArrayList<T>& v) const {
-            
+            if (this->left != nullptr)
+                left->post_order(v);
+            if (this->right != nullptr)
+                right->post_order(v);
+            v.push_back(this->data);
         }
     };
 
-    Node* root;
-    std::size_t size_;
+    Node* root{nullptr};
+    std::size_t size_{0u};
 };
 
-}
+}  // namespace structures
+
+#endif
