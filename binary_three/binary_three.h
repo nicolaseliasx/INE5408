@@ -25,9 +25,7 @@ public:
     }
 
     void remove(const T& data) {
-        if (empty()) {
-            throw std::out_of_range("ERRO ÁRVORE VAZIA!!!");
-        } else {
+        if (!empty()) {
             size_--;
             root->remove(data);
         }
@@ -105,38 +103,34 @@ private:
                 }
             }
         }
-
+        
+        // metodo remover errado arrumar
         bool remove(const T& data_) {
-            bool temp = false;
             if (data_ == this->data) {
-                Node* new_node;
                 if ((this->left != nullptr) && (this->right != nullptr)) {
-                    new_node = this->right;
-                    while (new_node->left != nullptr)
-                        new_node = new_node->left;
-                    this->data = new_node->data;
-                    temp = right->remove(this->data);
+                    Node *temp = this->right;
+                    while (temp->left != nullptr) {
+                        temp = temp->left;
+                    }
+                    this->data = temp->data;
+                    return right->remove(this->data);
                 } else {
                     if (this->right != nullptr) {
-                        this->data = right->data;
-                        temp = right -> remove(this->data);
-                    } else {
-                        if (this->left != nullptr) {
                         this->data = left->data;
-                        temp = left->remove(this->data);
-                        } else {
-                            delete this;
-                            temp = true;
-                        }
+                        return left->remove(this->data);
+                    } else {
+                        delete this;
+                        return true;
                     }
                 }
             } else {
-            if ((this->left != nullptr) && (data_ < this->data))
-                temp = left->remove(data_);
-            if ((this->right != nullptr) && (data_ > this->data))
-                temp = right->remove(data_);
+                if (this->right != nullptr && this->data < data_) {
+                    return right->remove(data_);
+                } else if (this->left != nullptr && this->data > data_) {
+                    return left->remove(data_);
+                }
             }
-            return temp;
+            return false;
         }
 
         bool contains(const T& data_) const {
